@@ -29,7 +29,7 @@ router.post('/', upload.single('image'), (req, res) => {
     }
     // Return the path to the uploaded file
     // Assuming the server serves 'uploads' folder statically at '/uploads'
-    const imageUrl = `https://zerogravity-backend.vercel.app/uploads/${req.file.filename}`;
+    const imageUrl = `https://album-frontend-eight.vercel.app/uploads/${req.file.filename}`;
     res.json({ imageUrl });
 });
 

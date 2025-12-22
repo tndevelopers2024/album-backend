@@ -21,7 +21,8 @@ app.use(
     origin: [
       "http://localhost:5175",
       "http://localhost:5174",
-      "https://zerogravity-frontend-peach.vercel.app"
+      "https://zerogravity-frontend-peach.vercel.app",
+      "https://album-frontend-eight.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
