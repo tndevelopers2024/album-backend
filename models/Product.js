@@ -28,8 +28,19 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: false,
-        default: 0
+        required: true
+    },
+    boxPrice: {
+        type: Number,
+        required: true,
+        default: 500
+    },
+    frontPageOptions: {
+        showFullNames: { type: Boolean, default: false },
+        showInitials: { type: Boolean, default: false },
+        showImage: { type: Boolean, default: false },
+        showDate: { type: Boolean, default: false },
+        showCustomText: { type: Boolean, default: false }
     },
     createdAt: {
         type: Date,

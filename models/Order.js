@@ -21,19 +21,32 @@ const orderSchema = new mongoose.Schema({
     },
     bindingType: {
         type: String,
-        enum: ['Layflat', 'Absolute Layflat', 'V-Cut', 'Book'],
+        enum: ['Layflat', 'NT'],
         required: true
     },
     paperType: {
         type: String,
-        required: true
+        enum: ['Glossy', 'Matte', 'Lustre', 'Metallic', 'Fine Art', 'Canvas'],
+        required: function () {
+            return this.bindingType === 'NT';
+        }
+    },
+    sheetCount: {
+        type: Number,
+        required: true,
+        min: 20,
+        max: 60
     },
     additionalPaper: {
         type: String
     },
     coverType: {
         type: String,
-        required: true
+        required: false
+    },
+    albumColor: {
+        type: String,
+        required: false
     },
     boxType: {
         type: String,
@@ -62,6 +75,17 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 1
+    },
+    calculatedPrice: {
+        type: Number,
+        required: false
+    },
+    frontPageCustomization: {
+        fullNames: { type: String },
+        initials: { type: String },
+        coverImage: { type: String },
+        date: { type: Date },
+        customText: { type: String }
     },
     logo: {
         type: String

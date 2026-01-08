@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const uploadRoutes = require('./routes/upload');
+const pricingRoutes = require('./routes/pricing');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,9 +21,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5175",
+      "http://localhost:5173",
       "http://localhost:5174",
       "https://zerogravity-frontend-peach.vercel.app",
-      "https://album-frontend-eight.vercel.app"
+      "http://localhost:5007"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -56,6 +58,7 @@ app.use('/api', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/album', pricingRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
