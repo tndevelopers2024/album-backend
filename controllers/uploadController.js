@@ -2,10 +2,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (skipped in production/serverless)
 const uploadDir = 'uploads';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(uploadDir)) {
+    try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    } catch (err) {
+        console.warn('Upload directory creation skipped:', err.message);
+    }
 }
 
 // Configure storage

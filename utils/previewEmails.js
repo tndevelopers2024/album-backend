@@ -26,10 +26,14 @@ const sampleUserData = {
     username: 'johndoe'
 };
 
-// Create previews directory if it doesn't exist
+// Create previews directory if it doesn't exist (skipped in production/serverless)
 const previewDir = path.join(__dirname, '../email-previews');
-if (!fs.existsSync(previewDir)) {
-    fs.mkdirSync(previewDir);
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(previewDir)) {
+    try {
+        fs.mkdirSync(previewDir, { recursive: true });
+    } catch (err) {
+        console.warn('Email previews directory creation skipped:', err.message);
+    }
 }
 
 // Generate preview files
