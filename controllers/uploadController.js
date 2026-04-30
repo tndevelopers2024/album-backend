@@ -13,14 +13,16 @@ if (process.env.NODE_ENV !== 'production' && !fs.existsSync(uploadDir)) {
 }
 
 // Configure storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Append extension
-    }
-});
+const storage = process.env.NODE_ENV === 'production' 
+    ? multer.memoryStorage() 
+    : multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/');
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + path.extname(file.originalname));
+        }
+    });
 
 const upload = multer({ storage: storage });
 
@@ -29,8 +31,16 @@ exports.uploadImage = (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
     }
-    // Return only the relative path (not full URL)
-    // Frontend will prepend the backend URL when displaying
+
+    if (process.env.NODE_ENV === 'production') {
+        // In production, we don't have local persistence.
+        // This is a placeholder until a cloud storage service is integrated.
+        return res.json({ 
+            imageUrl: 'https://placehold.co/600x400?text=Cloud+Storage+Required',
+            message: 'Local uploads are disabled in production. Please integrate Cloudinary.'
+        });
+    }
+
     const imageUrl = `/uploads/${req.file.filename}`;
     res.json({ imageUrl });
 };
