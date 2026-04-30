@@ -12,10 +12,14 @@ exports.register = async (req, res) => {
     try {
         const { name, email, phone, businessName, gstNo, username, password, logo } = req.body;
 
-        // Check if user exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ message: 'This email address is already registered' });
+        }
+
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ message: 'This username is already taken' });
         }
 
         // Create User
@@ -34,23 +38,26 @@ exports.register = async (req, res) => {
             username
         };
 
-        // Notify Admin with beautiful template
-        const adminEmailHTML = adminNewUserTemplate(userData);
-        await sendEmail(
-            process.env.ADMIN_EMAIL || 'admin@zerogravity.com',
-            '🎉 New User Registration - Zero Gravity',
-            `New user ${name} from ${businessName} has registered and is awaiting approval.`,
-            adminEmailHTML
-        );
+        // Send emails best-effort — don't fail registration if email service is down
+        try {
+            const adminEmailHTML = adminNewUserTemplate(userData);
+            await sendEmail(
+                process.env.ADMIN_EMAIL || 'admin@zerogravity.com',
+                '🎉 New User Registration - Zero Gravity',
+                `New user ${name} from ${businessName} has registered and is awaiting approval.`,
+                adminEmailHTML
+            );
 
-        // Notify User with beautiful template
-        const userEmailHTML = userRegistrationConfirmationTemplate(userData);
-        await sendEmail(
-            email,
-            '👋 Welcome to Zero Gravity - Registration Received',
-            'Your registration has been received and is pending approval.',
-            userEmailHTML
-        );
+            const userEmailHTML = userRegistrationConfirmationTemplate(userData);
+            await sendEmail(
+                email,
+                '👋 Welcome to Zero Gravity - Registration Received',
+                'Your registration has been received and is pending approval.',
+                userEmailHTML
+            );
+        } catch (emailError) {
+            console.error('Email notification failed (registration still succeeded):', emailError.message);
+        }
 
         res.status(201).json({ message: 'Registration successful. Please wait for admin approval.' });
     } catch (error) {
@@ -135,25 +142,31 @@ exports.verifyUser = async (req, res) => {
         if (action === 'approve') {
             user.status = 'approved';
 
-            // Send approval email with beautiful template
-            const approvalEmailHTML = userApprovedTemplate(userData);
-            await sendEmail(
-                user.email,
-                '🎉 Your Zero Gravity Account Has Been Approved!',
-                `Congratulations! Your account has been approved. Username: ${user.username}`,
-                approvalEmailHTML
-            );
+            try {
+                const approvalEmailHTML = userApprovedTemplate(userData);
+                await sendEmail(
+                    user.email,
+                    '🎉 Your Zero Gravity Account Has Been Approved!',
+                    `Congratulations! Your account has been approved. Username: ${user.username}`,
+                    approvalEmailHTML
+                );
+            } catch (emailError) {
+                console.error('Approval email failed:', emailError.message);
+            }
         } else if (action === 'reject') {
             user.status = 'rejected';
 
-            // Send rejection email with beautiful template
-            const rejectionEmailHTML = userRejectedTemplate(userData);
-            await sendEmail(
-                user.email,
-                'Zero Gravity Registration Status Update',
-                'We regret to inform you that your registration was not approved.',
-                rejectionEmailHTML
-            );
+            try {
+                const rejectionEmailHTML = userRejectedTemplate(userData);
+                await sendEmail(
+                    user.email,
+                    'Zero Gravity Registration Status Update',
+                    'We regret to inform you that your registration was not approved.',
+                    rejectionEmailHTML
+                );
+            } catch (emailError) {
+                console.error('Rejection email failed:', emailError.message);
+            }
         } else {
             return res.status(400).json({ message: 'Invalid action' });
         }
