@@ -31,17 +31,8 @@ const ALBUM_PRICING = {
     // Box finish types (no additional cost, included in cover)
     boxTypes: ['Regular', 'Matte', 'Glossy'],
 
-    // Available colors
-    colors: [
-        { name: 'Charcoal Gray', hex: '#3D4F58' },
-        { name: 'Warm Taupe', hex: '#8B7E74' },
-        { name: 'Sage Green', hex: '#9CAF88' },
-        { name: 'Navy Blue', hex: '#2C3E50' },
-        { name: 'Sky Blue', hex: '#87CEEB' },
-        { name: 'Caramel', hex: '#C68E5C' },
-        { name: 'Mustard Yellow', hex: '#E1AD01' },
-        { name: 'Stone Gray', hex: '#928E85' }
-    ],
+    // Available colors (Now dynamic per product)
+    colors: [],
 
     // Available sizes by orientation
     sizes: {

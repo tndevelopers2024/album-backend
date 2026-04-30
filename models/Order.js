@@ -27,7 +27,6 @@ const orderSchema = new mongoose.Schema({
     },
     paperType: {
         type: String,
-        enum: ['Glossy', 'Matte', 'Lustre', 'Metallic', 'Fine Art', 'Canvas'],
         required: function () {
             return this.bindingType === 'NT';
         }

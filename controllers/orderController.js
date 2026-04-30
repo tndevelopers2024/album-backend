@@ -37,7 +37,7 @@ exports.createOrder = async (req, res) => {
             title,
             size,
             bindingType,
-            paperType,
+            paperType: paperType || undefined,
             sheetCount,
             additionalPaper,
             albumColor,
