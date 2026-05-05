@@ -102,12 +102,86 @@ exports.login = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 username: user.username,
-                role: user.role
+                role: user.role,
+                favorites: user.favorites || []
             }
         });
     } catch (error) {
         console.error('❌ Login error:', error);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Toggle Favorite Product
+exports.toggleFavorite = async (req, res) => {
+    try {
+        const { userId, productId } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Check if product exists in favorites (handling ObjectId vs string comparison)
+        const isFav = user.favorites.some(id => id.toString() === productId);
+        
+        if (isFav) {
+            user.favorites = user.favorites.filter(id => id.toString() !== productId);
+            await user.save();
+            return res.json({ message: 'Removed from favorites', favorites: user.favorites });
+        } else {
+            user.favorites.push(productId);
+            await user.save();
+            return res.json({ message: 'Added to favorites', favorites: user.favorites });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Get Favorite Products
+exports.getFavorites = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).populate('favorites');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user.favorites);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Get User Profile
+exports.getUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Update User Profile
+exports.updateProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { name, phone, businessName, gstNo, logo } = req.body;
+        
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (businessName) user.businessName = businessName;
+        if (gstNo) user.gstNo = gstNo;
+        if (logo !== undefined) user.logo = logo;
+
+        await user.save();
+        
+        // Return updated user (excluding password)
+        const updatedUser = await User.findById(userId).select('-password');
+        res.json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 

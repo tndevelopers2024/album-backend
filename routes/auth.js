@@ -8,6 +8,18 @@ router.post('/register', authController.register);
 // Login User
 router.post('/login', authController.login);
 
+// Toggle Favorite
+router.post('/favorites/toggle', authController.toggleFavorite);
+
+// Get Favorites
+router.get('/favorites/:userId', authController.getFavorites);
+
+// Get User Profile
+router.get('/profile/:userId', authController.getUserProfile);
+
+// Update User Profile
+router.put('/profile/:userId', authController.updateProfile);
+
 // Get All Users (Admin)
 router.get('/users', authController.getAllUsers);
 

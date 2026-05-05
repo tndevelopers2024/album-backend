@@ -7,9 +7,12 @@ const UserSchema = new mongoose.Schema({
     businessName: { type: String, required: true },
     gstNo: { type: String, required: true },
     username: { type: String, required: true, unique: true },
-    username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     logo: { type: String, default: '' },
+    favorites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],

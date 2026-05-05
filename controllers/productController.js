@@ -3,7 +3,10 @@ const Product = require('../models/Product');
 // GET all products
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: -1 });
+        // Select only essential fields for the shop list to reduce payload size
+        const products = await Product.find()
+            .select('name category description image gallery price createdAt')
+            .sort({ createdAt: -1 });
         res.json(products);
     } catch (err) {
         res.status(500).json({ message: err.message });

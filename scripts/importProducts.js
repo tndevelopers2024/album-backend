@@ -171,7 +171,7 @@ async function migrate() {
                 gallery: mainGallery,
                 features: [row['SIZE OPTIONS'].replace(/\n/g, ', ')],
                 benefits: ['Premium Quality', 'Handcrafted', 'Fast Delivery'],
-                price: 2500, // Default price
+                price: 0, // Default price (set to 0 as requested)
                 boxPrice: 500, // Default box price
                 frontPageOptions,
                 sizes,
