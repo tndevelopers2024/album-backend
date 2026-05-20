@@ -27,6 +27,7 @@ app.use(
       "http://localhost:5174",
       "https://zerogravity-frontend-peach.vercel.app",
       "https://golden-horse-bd23bb.netlify.app",
+      "https://album-frontend-eight.vercel.app",
       "http://localhost:5007"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
