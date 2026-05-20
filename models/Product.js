@@ -33,11 +33,10 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        default: 0
     },
     boxPrice: {
         type: Number,
-        required: true,
         default: 500
     },
     frontPageOptions: [{
@@ -67,6 +66,10 @@ const productSchema = new mongoose.Schema({
         name: { type: String, required: true },
         hex: { type: String },
         gallery: { type: [String], default: [] }
+    }],
+    specifications: [{
+        spec: { type: mongoose.Schema.Types.ObjectId, ref: 'MasterSpecification' },
+        enabledOptions: { type: [String], default: [] }
     }],
     createdAt: {
         type: Date,

@@ -16,7 +16,7 @@ exports.getAllProducts = async (req, res) => {
 // GET single product
 exports.getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate('specifications.spec');
         if (!product) return res.status(404).json({ message: 'Product not found' });
         res.json(product);
     } catch (err) {
@@ -41,7 +41,8 @@ exports.createProduct = async (req, res) => {
         paperTypes: req.body.paperTypes,
         bindingTypes: req.body.bindingTypes,
         boxFinishes: req.body.boxFinishes,
-        colors: req.body.colors
+        colors: req.body.colors,
+        specifications: req.body.specifications
     });
 
     try {
@@ -73,6 +74,7 @@ exports.updateProduct = async (req, res) => {
         if (req.body.bindingTypes != null) product.bindingTypes = req.body.bindingTypes;
         if (req.body.boxFinishes != null) product.boxFinishes = req.body.boxFinishes;
         if (req.body.colors != null) product.colors = req.body.colors;
+        if (req.body.specifications != null) product.specifications = req.body.specifications;
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);

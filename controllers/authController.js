@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const sendEmail = require('../utils/emailService');
 const {
@@ -116,6 +117,9 @@ exports.login = async (req, res) => {
 exports.toggleFavorite = async (req, res) => {
     try {
         const { userId, productId } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ message: 'Invalid ID provided' });
+        }
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -140,6 +144,9 @@ exports.toggleFavorite = async (req, res) => {
 exports.getFavorites = async (req, res) => {
     try {
         const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid User ID' });
+        }
         const user = await User.findById(userId).populate('favorites');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user.favorites);
@@ -152,6 +159,9 @@ exports.getFavorites = async (req, res) => {
 exports.getUserProfile = async (req, res) => {
     try {
         const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid User ID' });
+        }
         const user = await User.findById(userId).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user);
@@ -164,6 +174,9 @@ exports.getUserProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
     try {
         const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid User ID' });
+        }
         const { name, phone, businessName, gstNo, logo } = req.body;
         
         const user = await User.findById(userId);

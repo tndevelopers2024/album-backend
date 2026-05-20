@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
@@ -25,8 +26,14 @@ exports.createOrder = async (req, res) => {
             logo,
             frontPageCustomization,
             deliveryAddress,
-            calculatedPrice
+            calculatedPrice,
+            dynamicSpecs,
+            dynamicSpecsCost
         } = req.body;
+        
+        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ message: 'Invalid User or Product ID' });
+        }
 
         // Use the calculated price from frontend (already includes PAD pricing)
         const finalPrice = calculatedPrice || 0;
@@ -35,24 +42,26 @@ exports.createOrder = async (req, res) => {
             user: userId,
             product: productId,
             title,
-            size,
-            bindingType,
-            paperType: paperType || undefined,
+            size: size || dynamicSpecs?.['square_sizes'] || dynamicSpecs?.['portrait_sizes'] || dynamicSpecs?.['landscape_sizes'],
+            bindingType: bindingType || dynamicSpecs?.['binding_types'],
+            paperType: paperType || dynamicSpecs?.['paper_types'],
             sheetCount,
             additionalPaper,
             albumColor,
             coverType,
-            boxType,
-            bagType,
+            boxType: boxType || dynamicSpecs?.['box_finishes'],
+            bagType: bagType || dynamicSpecs?.['bag_types'],
             calendarType,
             acrylicCalendar,
             replicaEbook,
             imageLink,
-            quantity,
+            quantity: quantity || 1,
             logo,
             frontPageCustomization,
             deliveryAddress,
-            calculatedPrice: finalPrice
+            calculatedPrice: finalPrice,
+            dynamicSpecs,
+            dynamicSpecsCost
         });
 
         await newOrder.save();
@@ -65,7 +74,11 @@ exports.createOrder = async (req, res) => {
 // Get User Orders
 exports.getUserOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.params.userId })
+        const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid User ID' });
+        }
+        const orders = await Order.find({ user: userId })
             .populate('product')
             .sort({ createdAt: -1 });
         res.json(orders);
@@ -90,9 +103,17 @@ exports.getAllOrders = async (req, res) => {
 // Get Single Order by ID
 exports.getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.orderId)
-            .populate('user', 'name email businessName phone')
-            .populate('product', 'name image price boxPrice');
+        const { orderId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({ message: 'Invalid Order ID' });
+        }
+        const order = await Order.findById(orderId)
+            .populate('user', 'name email businessName phone logo')
+            .populate({
+                path: 'product',
+                select: 'name image price boxPrice specifications',
+                populate: { path: 'specifications.spec', model: 'MasterSpecification' }
+            });
 
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });

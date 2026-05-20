@@ -10,6 +10,8 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const uploadRoutes = require('./routes/upload');
 const pricingRoutes = require('./routes/pricing');
+const masterSpecRoutes = require('./routes/masterSpecs');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -60,6 +62,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/album', pricingRoutes);
+app.use('/api/master-specs', masterSpecRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

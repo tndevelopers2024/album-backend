@@ -18,18 +18,15 @@ const orderSchema = new mongoose.Schema({
     },
     size: {
         type: String,
-        required: true
+        required: false
     },
     bindingType: {
         type: String,
-        enum: ['Layflat', 'NT'],
-        required: true
+        required: false
     },
     paperType: {
         type: String,
-        required: function () {
-            return this.bindingType === 'NT';
-        }
+        required: false
     },
     sheetCount: {
         type: Number,
@@ -50,8 +47,7 @@ const orderSchema = new mongoose.Schema({
     },
     boxType: {
         type: String,
-        enum: ['Regular', 'Matte', 'Glossy'],
-        required: true
+        required: false
     },
     bagType: {
         type: String
@@ -81,14 +77,19 @@ const orderSchema = new mongoose.Schema({
         required: false
     },
     frontPageCustomization: {
-        fullNames: { type: String },
-        initials: { type: String },
-        coverImage: { type: String },
-        date: { type: Date },
-        customText: { type: String }
+        type: Map,
+        of: String
     },
     logo: {
         type: String
+    },
+    dynamicSpecs: {
+        type: Map,
+        of: String
+    },
+    dynamicSpecsCost: {
+        type: Number,
+        default: 0
     },
     deliveryAddress: {
         name: {
@@ -126,6 +127,13 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'processing', 'completed', 'cancelled'],
         default: 'pending'
     },
+    paymentStatus: {
+        type: String,
+        enum: ['payment_pending', 'paid', 'failed'],
+        default: 'payment_pending'
+    },
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
     createdAt: {
         type: Date,
         default: Date.now
