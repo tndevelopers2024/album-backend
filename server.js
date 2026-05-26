@@ -28,7 +28,7 @@ app.use(
       "https://zerogravity-frontend-peach.vercel.app",
       "https://golden-horse-bd23bb.netlify.app",
       "https://album-frontend-eight.vercel.app",
-      "http://localhost:5007"
+      "https://dev.placetest.in"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
