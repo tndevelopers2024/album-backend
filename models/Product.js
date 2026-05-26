@@ -69,7 +69,7 @@ const productSchema = new mongoose.Schema({
     }],
     specifications: [{
         spec: { type: mongoose.Schema.Types.ObjectId, ref: 'MasterSpecification' },
-        enabledOptions: { type: [String], default: [] }
+        enabledOptions: { type: [mongoose.Schema.Types.Mixed], default: [] }
     }],
     createdAt: {
         type: Date,
