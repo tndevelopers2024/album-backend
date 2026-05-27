@@ -21,7 +21,7 @@ const seedSpecs = [
     },
     {
         name: 'binding_types',
-        label: 'Binding Types',
+        label: 'Laminate Type',
         options: [
             { label: 'NT', price: 0 },
             { label: 'Layflat', price: 0 }
